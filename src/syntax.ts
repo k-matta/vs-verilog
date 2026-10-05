@@ -27,7 +27,7 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 
 	// 3. RUN YOUR PARSER HERE
 	// This example uses a simple regex to flag the word "error" as a syntax issue
-	let regex = /(assign|logic|parameter|integer|variable)[^;\n]+$/g; 
+	let regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^=\n]+$/gm; 
 	let match;
 
 	while ((match = regex.exec(text)) !== null) {
@@ -37,7 +37,39 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 
 		const diagnostic = new vscode.Diagnostic(
 			range,
-			'Syntax Error: statements must be terminated by a semicolon.',
+			'Syntax Error: Expecting expression.',
+			vscode.DiagnosticSeverity.Error
+		);
+		
+		diagnostics.push(diagnostic);
+	}
+
+	regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^;=\n]+=[\s;]+$/gm;
+
+	while ((match = regex.exec(text)) !== null) {
+		const startPos = document.positionAt(match.index);
+		const endPos = document.positionAt(match.index + match[0].length);
+		const range = new vscode.Range(startPos, endPos);
+
+		const diagnostic = new vscode.Diagnostic(
+			range,
+			'Syntax Error: Expecting expression.',
+			vscode.DiagnosticSeverity.Error
+		);
+		
+		diagnostics.push(diagnostic);
+	}
+
+	regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^;\n]+$/gm;
+
+	while ((match = regex.exec(text)) !== null) {
+		const startPos = document.positionAt(match.index);
+		const endPos = document.positionAt(match.index + match[0].length);
+		const range = new vscode.Range(startPos, endPos);
+
+		const diagnostic = new vscode.Diagnostic(
+			range,
+			'Syntax Error: All statements must be terminated by a semicolon.',
 			vscode.DiagnosticSeverity.Error
 		);
 		
@@ -105,23 +137,6 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 				diagnostics.push(diagnostic);
 			}
 		}
-	}
-
-	regex = /(assign|logic|parameter|integer|variable).+(?!=)$/g; 
-	match;
-
-	while ((match = regex.exec(text)) !== null) {
-		const startPos = document.positionAt(match.index);
-		const endPos = document.positionAt(match.index + match[0].length);
-		const range = new vscode.Range(startPos, endPos);
-
-		const diagnostic = new vscode.Diagnostic(
-			range,
-			'Syntax Error: Expecting expression.',
-			vscode.DiagnosticSeverity.Error
-		);
-		
-		diagnostics.push(diagnostic);
 	}
 
 	// 4. Update the editor with the squiggles
