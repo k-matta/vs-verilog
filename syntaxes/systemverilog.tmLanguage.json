@@ -1,0 +1,132 @@
+{
+	"$schema": "../schema.json",
+	"name": "SystemVerilog",
+	"patterns": [
+		{ "include": "#nested-objects" },
+		{ "include": "#keywords" },
+		{ "include": "#strings" },
+		{ "include": "#comments" },
+		{ "include": "#constants" },
+		{ "include": "#variables" },
+		{ "include": "#support" },
+		{ "include": "#entities" },
+		{ "include": "#invalid" },
+		{ "include": "#invalidadvanced-structures" }
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.systemverilog",
+					"match": "\\b(if|while|for|return|break|continue|else|always_ff|always_comb|always|posedge|negedge|default)\\b"
+				},
+				{
+					"name": "keyword.control.systemverilog",
+					"match": "^\\`[a-z_\\-]+"
+				},
+				{
+					"name": "keyword.specifier.systemverilog",
+					"match": "\\b(input|output)\\b"
+				},
+				{
+					"name": "keyword.logic.systemverilog",
+					"match": "\\b(and|or)\\b"
+				},
+				{
+					"name": "keyword.define.systemverilog",
+					"match": "\\b(logic|variable|integer|parameter|assign|enum\\b)"
+				},
+				{
+					"name": "keyword.operator.systemverilog",
+					"match": "\\@|==|<=|>=|&&|\\|\\||\\+|-|;|:|=|<|>|-|!|~|&|\\||\\^"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.systemverilog",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.systemverilog",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.systemverilog",
+					"begin": "/\\*",
+					"end": "\\*/"
+				},
+				{
+					"name": "comment.line.double-slash.systemverilog",
+					"match": "(//.*$)"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.numeric.binary.systemverilog",
+					"match": "\\b[0-9]*'b[01]+\\b"
+				},
+				{
+					"name": "constant.numeric.octal.systemverilog",
+					"match": "\\b[0-9]*'o[0-7]+\\b"
+				},
+				{
+					"name": "constant.numeric.decimal.systemverilog",
+					"match": "\\b[0-9]*'d[0-9]+\\b"
+				},
+				{
+					"name": "constant.numeric.hexadecimal.systemverilog",
+					"match": "\\b[0-9]*'h[0-9A-Fa-f]+\\b"
+				},
+				{
+					"name": "constant.numeric.integer.systemverilog",
+					"match": "(\\b[0-9]+\\b)"
+				}
+			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"match": "(\\b[A-Za-z0-9_\\-]+\\s)([A-Za-z0-9_\\-]+)(\\s*\\()",
+					"captures": {
+						"1": {
+							"name": "variable.other.module.systemverilog"
+						},
+						"2": {
+							"name": "variable.other.member.systemverilog"
+						}
+					}
+				},
+				{
+					"match": "(\\.\\b[A-Za-z0-9_\\-]+\\s*)\\(\\s*([A-Za-z0-9_\\-]+)(\\[[0-9]*:[0-9]*\\])?\\s*\\)",
+					"captures": {
+						"1": {
+							"name": "variable.parameter"
+						},
+						"2": {
+							"name": "variable.other.argument.systemverilog"
+						},
+						"3": {
+							"name": "constant.numeric.integer.systemverilog"
+						}
+					}
+				},
+				{
+					"match": "(\\b[A-Z_][A-Z0-9_\\-]+\\b)",
+					"name": "variable.other.caps.systemverilog"
+				},
+				{
+					"match": "(\\b[a-zA-Z_][a-zA-Z0-9_\\-]+\\b)",
+					"name": "variable.normal.systemverilog"
+				}
+			]
+		}
+	},
+	"scopeName": "source.systemverilog"
+}

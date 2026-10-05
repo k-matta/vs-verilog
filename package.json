@@ -1,0 +1,47 @@
+{
+  "name": "vs-verilog",
+  "displayName": "VS Verilog",
+  "description": "Verilog/System Verilog syntax highlighting for VS Code.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.135.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Themes"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "systemverilog",
+        "aliases": [
+          "SystemVerilog",
+          "systemverilog"
+        ],
+        "extensions": [
+          ".vs",
+          ".v"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "systemverilog",
+        "scopeName": "source.systemverilog",
+        "path": "./syntaxes/systemverilog.tmLanguage.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "VS Verilog Theme",
+        "uiTheme": "vs-dark",
+        "path": "./themes/vs-verilog-color-theme.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.140.0"
+  },
+  "main": "./out/syntax.js"
+}
