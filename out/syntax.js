@@ -16,31 +16,47 @@ function validateDocument(document, collection) {
     }
     const diagnostics = [];
     const text = document.getText();
+    const variable = /[A-Za-z_0-9]+/;
+    const direction = /input\s|output\s/;
+    const assignment = /assign\s|logic\s|parameter\s|integer\s|variable\s/;
+    const control = /if\s|when\s|always\s|always_ff\s|always_comb\s|else\s|begin\s|end\s/;
+    const anyStart = new RegExp(`${assignment.source}|${direction.source}|${control.source}`);
     // 3. RUN YOUR PARSER HERE
-    // This example uses a simple regex to flag the word "error" as a syntax issue
-    let regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^=\n]+$/gm;
+    let regex = new RegExp(`\\b(${assignment.source})[^;=]*?(<)?=(\\s)*?(;|${anyStart.source}|\n)`, 'g');
     let match;
     while ((match = regex.exec(text)) !== null) {
+        console.log(match[0]);
         const startPos = document.positionAt(match.index);
         const endPos = document.positionAt(match.index + match[0].length);
         const range = new vscode.Range(startPos, endPos);
         const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: Expecting expression.', vscode.DiagnosticSeverity.Error);
         diagnostics.push(diagnostic);
     }
-    regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^;=\n]+=[\s;]+$/gm;
+    regex = new RegExp(`(^\\b|;\\b)(?!${direction.source})((${assignment.source})[^;\n]+)(${anyStart.source}|\n)`, "gmd");
     while ((match = regex.exec(text)) !== null) {
-        const startPos = document.positionAt(match.index);
-        const endPos = document.positionAt(match.index + match[0].length);
+        console.log("Assignment:", match[0]);
+        const startPos = document.positionAt(match.indices[2][0]);
+        const endPos = document.positionAt(match.indices[2][1]);
         const range = new vscode.Range(startPos, endPos);
-        const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: Expecting expression.', vscode.DiagnosticSeverity.Error);
+        const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: All statements must be terminated by a semicolon.', vscode.DiagnosticSeverity.Error);
         diagnostics.push(diagnostic);
     }
-    regex = /^(\s*)?(assign|logic|parameter|integer|variable)[^;\n]+$/gm;
+    regex = new RegExp(`\\b(?!${direction.source}|${control.source}|\\(|\\))${variable.source}\\s*(<)?=\\s*[^;)]*?\n`, "gm");
     while ((match = regex.exec(text)) !== null) {
+        console.log("Generic:", match[0]);
         const startPos = document.positionAt(match.index);
         const endPos = document.positionAt(match.index + match[0].length);
         const range = new vscode.Range(startPos, endPos);
         const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: All statements must be terminated by a semicolon.', vscode.DiagnosticSeverity.Error);
+        diagnostics.push(diagnostic);
+    }
+    regex = new RegExp(`(^\\b|,\\b)((?:${direction.source})(?:${assignment.source})[^,\\n\\)]+)(?=\\n\\s*(?:${direction.source}))`, "gd");
+    while ((match = regex.exec(text)) !== null) {
+        console.log("Generic:", match[0]);
+        const startPos = document.positionAt(match.indices[2][0]);
+        const endPos = document.positionAt(match.indices[2][1]);
+        const range = new vscode.Range(startPos, endPos);
+        const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: Expecting a comma.', vscode.DiagnosticSeverity.Error);
         diagnostics.push(diagnostic);
     }
     regex = /(\d+)'(b|o|d|h)(.+?)\b/g;
