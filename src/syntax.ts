@@ -86,7 +86,7 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 		diagnostics.push(diagnostic);
 	}
 
-	regex = new RegExp(`(^\\b|;\\b)(?!${direction.source})((${assignment.source})[^;\n]+)(${anyStart.source}|\n)`, "gmd");
+	regex = new RegExp(`(^\\b|;\\b)(?!${direction.source})((${assignment.source})[^;]*?[^;,\\s])(?=\\s*(?:${anyStart.source}|$))`, "gmd");
 
 	while ((match = regex.exec(text)) !== null) {
 		console.log("Assignment:", match[0]);

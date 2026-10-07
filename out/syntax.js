@@ -63,7 +63,7 @@ function validateDocument(document, collection) {
         const diagnostic = new vscode.Diagnostic(range, 'Syntax Error: Expecting expression.', vscode.DiagnosticSeverity.Error);
         diagnostics.push(diagnostic);
     }
-    regex = new RegExp(`(^\\b|;\\b)(?!${direction.source})((${assignment.source})[^;\n]+)(${anyStart.source}|\n)`, "gmd");
+    regex = new RegExp(`(^\\b|;\\b)(?!${direction.source})((${assignment.source})[^;]*?[^;,\\s])(?=\\s*(?:${anyStart.source}|$))`, "gmd");
     while ((match = regex.exec(text)) !== null) {
         console.log("Assignment:", match[0]);
         const startPos = document.positionAt(match.indices[2][0]);
