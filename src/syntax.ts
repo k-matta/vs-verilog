@@ -17,6 +17,43 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeTextDocument(event => validateDocument(event.document, diagnosticCollection))
 	);
+
+	const TARGET_LANGUAGE = 'systemverilog';
+	const CUSTOM_THEME = 'VS Verilog Theme';
+
+	// State variable to cache the user's original theme
+	let originalTheme: string | undefined = undefined;
+
+	// Core function to evaluate the active editor and swap themes
+	const updateThemeBasedOnLanguage = async (editor: vscode.TextEditor | undefined) => {
+		const config = vscode.workspace.getConfiguration();
+		const currentTheme = config.get<string>('workbench.colorTheme');
+		console.log(currentTheme);
+		if (editor && editor.document.languageId === TARGET_LANGUAGE) {
+			// Only cache if the current theme isn't already our custom theme
+			if (currentTheme !== CUSTOM_THEME) {
+				originalTheme = currentTheme;
+				// Temporarily switch to your language's theme
+				await config.update('workbench.colorTheme', CUSTOM_THEME, vscode.ConfigurationTarget.Global);
+			}
+		} else {
+			// When leaving your language file, revert to their original theme
+			if (originalTheme && currentTheme === CUSTOM_THEME) {
+				await config.update('workbench.colorTheme', originalTheme, vscode.ConfigurationTarget.Global);
+				originalTheme = undefined; // Reset cache
+			}
+		}
+	};
+
+	// Trigger 1: Listen when the user switches tabs or opens a new file
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor(editor => {
+			updateThemeBasedOnLanguage(editor);
+		})
+	);
+
+	// Trigger 2: Run an initial check on startup in case the user loads directly into your file
+	updateThemeBasedOnLanguage(vscode.window.activeTextEditor);
 }
 
 function validateDocument(document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {

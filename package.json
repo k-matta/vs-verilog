@@ -16,7 +16,9 @@
         "id": "systemverilog",
         "aliases": [
           "SystemVerilog",
-          "systemverilog"
+          "systemverilog",
+		  "verilog",
+		  "Verilog"
         ],
         "extensions": [
           ".vs",
@@ -43,5 +45,8 @@
   "devDependencies": {
     "@types/vscode": "^1.140.0"
   },
-  "main": "./out/syntax.js"
+  "main": "./out/syntax.js",
+  "activationEvents": [
+    "onLanguage:your_custom_language_id"
+  ]
 }
