@@ -16,3 +16,6 @@ For simplicity, the extension comes preloaded with all required modules and file
 
 ### 0.0.1
 Basic working features implemented.
+
+### 0.0.2
+Automated theme switching for convenience.
