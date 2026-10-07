@@ -18,42 +18,42 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.onDidChangeTextDocument(event => validateDocument(event.document, diagnosticCollection))
 	);
 
-	const TARGET_LANGUAGE = 'systemverilog';
-	const CUSTOM_THEME = 'VS Verilog Theme';
+	// const TARGET_LANGUAGE = 'systemverilog';
+	// const CUSTOM_THEME = 'VS Verilog Theme';
 
-	// State variable to cache the user's original theme
-	let originalTheme: string | undefined = undefined;
+	// // State variable to cache the user's original theme
+	// let originalTheme: string | undefined = undefined;
 
-	// Core function to evaluate the active editor and swap themes
-	const updateThemeBasedOnLanguage = async (editor: vscode.TextEditor | undefined) => {
-		const config = vscode.workspace.getConfiguration();
-		const currentTheme = config.get<string>('workbench.colorTheme');
-		console.log(currentTheme);
-		if (editor && editor.document.languageId === TARGET_LANGUAGE) {
-			// Only cache if the current theme isn't already our custom theme
-			if (currentTheme !== CUSTOM_THEME) {
-				originalTheme = currentTheme;
-				// Temporarily switch to your language's theme
-				await config.update('workbench.colorTheme', CUSTOM_THEME, vscode.ConfigurationTarget.Global);
-			}
-		} else {
-			// When leaving your language file, revert to their original theme
-			if (originalTheme && currentTheme === CUSTOM_THEME) {
-				await config.update('workbench.colorTheme', originalTheme, vscode.ConfigurationTarget.Global);
-				originalTheme = undefined; // Reset cache
-			}
-		}
-	};
+	// // Core function to evaluate the active editor and swap themes
+	// const updateThemeBasedOnLanguage = async (editor: vscode.TextEditor | undefined) => {
+	// 	const config = vscode.workspace.getConfiguration();
+	// 	const currentTheme = config.get<string>('workbench.colorTheme');
+	// 	console.log(currentTheme);
+	// 	if (editor && editor.document.languageId === TARGET_LANGUAGE) {
+	// 		// Only cache if the current theme isn't already our custom theme
+	// 		if (currentTheme !== CUSTOM_THEME) {
+	// 			originalTheme = currentTheme;
+	// 			// Temporarily switch to your language's theme
+	// 			await config.update('workbench.colorTheme', CUSTOM_THEME, vscode.ConfigurationTarget.Global);
+	// 		}
+	// 	} else {
+	// 		// When leaving your language file, revert to their original theme
+	// 		if (originalTheme && currentTheme === CUSTOM_THEME) {
+	// 			await config.update('workbench.colorTheme', originalTheme, vscode.ConfigurationTarget.Global);
+	// 			originalTheme = undefined; // Reset cache
+	// 		}
+	// 	}
+	// };
 
-	// Trigger 1: Listen when the user switches tabs or opens a new file
-	context.subscriptions.push(
-		vscode.window.onDidChangeActiveTextEditor(editor => {
-			updateThemeBasedOnLanguage(editor);
-		})
-	);
+	// // Trigger 1: Listen when the user switches tabs or opens a new file
+	// context.subscriptions.push(
+	// 	vscode.window.onDidChangeActiveTextEditor(editor => {
+	// 		updateThemeBasedOnLanguage(editor);
+	// 	})
+	// );
 
-	// Trigger 2: Run an initial check on startup in case the user loads directly into your file
-	updateThemeBasedOnLanguage(vscode.window.activeTextEditor);
+	// // Trigger 2: Run an initial check on startup in case the user loads directly into your file
+	// updateThemeBasedOnLanguage(vscode.window.activeTextEditor);
 }
 
 function validateDocument(document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {
@@ -63,8 +63,8 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 	const text = document.getText();
 
 	const variable = /[A-Za-z_0-9]+/;
-	const direction = /input\s|output\s/;
-	const assignment = /assign\s|logic\s|parameter\s|integer\s|variable\s/;
+	const direction = /input\s|output\s||inout\s/;
+	const assignment = /assign\s|logic\s|parameter\s|integer\s|variable\s|wire\s|enum\s/;
 	const control = /if\s|when\s|always\s|always_ff\s|always_comb\s|else\s|begin\s|end\s/;
 	const anyStart = new RegExp(`${assignment.source}|${direction.source}|${control.source}`);
 	// 3. RUN YOUR PARSER HERE
@@ -121,13 +121,13 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 	}
 
 	regex = new RegExp(`(^\\b|,\\b)((?:${direction.source})(?:${assignment.source})[^,\\n\\)]+)(?=\\n\\s*(?:${direction.source}))`, "gd");
-
+	
 	while ((match = regex.exec(text)) !== null) {
 		console.log("Generic:", match[0]);
 		const startPos = document.positionAt(match.indices![2]![0]);
 		const endPos = document.positionAt(match.indices![2]![1]);
 		const range = new vscode.Range(startPos, endPos);
-
+		
 		const diagnostic = new vscode.Diagnostic(
 			range,
 			'Syntax Error: Expecting a comma.',
@@ -137,7 +137,24 @@ function validateDocument(document: vscode.TextDocument, collection: vscode.Diag
 		diagnostics.push(diagnostic);
 	}
 
-	regex = /(\d+)'(b|o|d|h)(.+?)\b/g;
+	regex = /(?!')(.+?)\d+'(.+?)/g;
+
+	while ((match = regex.exec(text)) !== null) {
+		const value = match[3];
+		if ((/[(b|o|d|h)]/g.exec(value[0])) !== null) {
+			const startPos = document.positionAt(match.index);
+			const endPos = document.positionAt(match.index+match.length);
+			const range = new vscode.Range(startPos, endPos);
+			const diagnostic = new vscode.Diagnostic(
+				range,
+				`Syntax Error: Expected base specifier ('b', 'o', 'd', or 'h').`,
+				vscode.DiagnosticSeverity.Error
+			);
+			diagnostics.push(diagnostic);
+		}
+	}
+
+	regex = /(\d+)'(b|o|d|h)([0-9]+?)\b/g;
 
 	while ((match = regex.exec(text)) !== null) {
 		const bits = match[1];

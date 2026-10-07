@@ -97,13 +97,13 @@
         "foreground": "#6aadc5"
       }
     },
-	{
-      "name": "Capital variable",
-      "scope": "variable.other.caps.systemverilog",
-      "settings": {
-        "foreground": "#5187dd"
-      }
-    },
+	// {
+    //   "name": "Capital variable",
+    //   "scope": "constant.other.caps.systemverilog",
+    //   "settings": {
+    //     "foreground": "#5187dd"
+    //   }
+    // },
 	{
       "name": "Module Instance",
       "scope": "variable.other.member.systemverilog",
