@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/System Verilog syntax highlighting for VS Code.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.135.0"
   },

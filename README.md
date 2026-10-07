@@ -19,3 +19,6 @@ Basic working features implemented.
 
 ### 0.0.2
 Automated theme switching for convenience.
+
+### 0.0.3
+Fixed an erroneous `missing semicolon` error.
