@@ -32,7 +32,7 @@
         ["\"", "\""],
     ],
 	"indentationRules": {
-		"increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)|begin$",
-		"decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*|end$"
+		"increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*|begin|case)$",
+		"decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*([\\)\\}\\]]|end|endcase).*$"
 	}
 }

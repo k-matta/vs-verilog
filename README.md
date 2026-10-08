@@ -25,3 +25,6 @@ Fixed an erroneous `missing semicolon` error.
 
 ### 0.0.4
 Added more granular scopes, switched from auto theme switching to using predefined token scopes to allow compatability with normal themes.
+
+### 0.0.5
+Fixed auto-indentation for begin/end and similar blocks.
