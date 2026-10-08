@@ -7,10 +7,10 @@
 		{ "include": "#strings" },
 		{ "include": "#storages" },
 		{ "include": "#comments" },
+		{ "include": "#support" },
 		{ "include": "#constants" },
 		{ "include": "#entities" },
 		{ "include": "#variables" },
-		{ "include": "#support" },
 		{ "include": "#invalid" },
 		{ "include": "#invalidadvanced-structures" }
 	],
@@ -19,7 +19,19 @@
 			"patterns": [
 				{
 					"name": "keyword.control.systemverilog",
-					"match": "\\b(if|while|for|return|break|continue|else|always_ff|always_comb|always|posedge|negedge|default)\\b"
+					"match": "\\b(posedge|negedge)\\b"
+				},
+				{
+					"name": "keyword.control.flow.systemverilog",
+					"match": "\\b(return|break|continue|default)\\b"
+				},
+				{
+					"name": "keyword.control.loop.systemverilog",
+					"match": "\\b(while|for|break|continue|always_ff|always_comb|always|initial)\\b"
+				},
+				{
+					"name": "keyword.control.conditional.systemverilog",
+					"match": "\\b(if|else)\\b"
 				},
 				{
 					"name": "keyword.control.systemverilog",
@@ -30,16 +42,28 @@
 					"match": "\\b(input|output|inout)\\b"
 				},
 				{
-					"name": "keyword.logic.systemverilog",
-					"match": "\\b(and|or)\\b"
+					"name": "keyword.operator.comparison.systemverilog",
+					"match": "==|<=|>=|<|>"
+				},
+				{
+					"name": "keyword.operator.logical.systemverilog",
+					"match": "(\\b(and|or)\\b|&&|\\|\\||!|~|&|\\||\\^)"
 				},
 				{
 					"name": "keyword.define.systemverilog",
-					"match": "\\b(logic|variable|integer|parameter|assign|enum|wire\\b)"
+					"match": "\\b(logic|variable|integer|parameter|assign|enum|wire)\\b"
+				},
+				{
+					"name": "keyword.operator.assignment.systemverilog",
+					"match": "(?<![=<>!])=(?![=])|<=|(?<!<)="
+				},
+				{
+					"name": "keyword.operator.arithmetic.systemverilog",
+					"match": "\\+|-|%|\\*|((?!/)/(?!/))"
 				},
 				{
 					"name": "keyword.operator.systemverilog",
-					"match": "\\@|==|<=|>=|&&|\\|\\||\\+|-|;|:|=|<|>|-|!|~|&|\\||\\^"
+					"match": "\\@|;|:"
 				}
 			]
 		},
@@ -129,7 +153,7 @@
 							"name": "entity.name.function.systemverilog"
 						},
 						"2": {
-							"name": "entity.name.method.systemverilog"
+							"name": "entity.name.type.systemverilog"
 						}
 					}
 				}

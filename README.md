@@ -22,3 +22,6 @@ Automated theme switching for convenience.
 
 ### 0.0.3
 Fixed an erroneous `missing semicolon` error.
+
+### 0.0.4
+Added more granular scopes, switched from auto theme switching to using predefined token scopes to allow compatability with normal themes.
