@@ -9,8 +9,10 @@ The extension is designed with basic syntax highlighting for keywords, variables
 ### Lightweight Syntax Checking
 The extension also implements some basic syntax checking including looking for missing semicolons and verifying that numbers are properly defined (i.e., only 0 and 1 used in binary and enough bits allocated for the desired value).
 
-## Requirements
-For simplicity, the extension comes preloaded with all required modules and files.
+## Usage Instructions
+Run `curl -L -O https://github.com/k-matta/vs-verilog/releases/latest/download/vs-verilog-v0.0.6.vsix && code --uninstall-extension karl.vs-verilog & code --install-extension $(ls -1rf --sort=version | grep vs-verilog | head -n 1 | xargs -d '\n')` in the directory you want to store the extension in.
+Then, if it does not appear in your extension list, click the three dots at the top-right of the extensions panel and choose `Install from VSIX...`.
+Open a `.v` or `.sv` file. If you do not see syntax highlighting automatically applied, click `Plain Text` at the bottom right of the screen, then choose `Configure file association for '.sv'...` and choose `SystemVerilog` from the list.
 
 ## Release Notes
 
