@@ -44,7 +44,7 @@
     ]
   },
   "devDependencies": {
-    "@types/vscode": "^1.140.0",
+    "@types/vscode": "^1.135.0",
     "typescript": "^7.0.2"
   },
   "main": "./out/syntax.js"
