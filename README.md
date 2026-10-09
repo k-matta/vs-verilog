@@ -14,6 +14,9 @@ For simplicity, the extension comes preloaded with all required modules and file
 
 ## Release Notes
 
+### 0.0.7
+Forced code snippets to be the top suggestion.
+
 ### 0.0.6
 Adding code snippets and adding package.yml for extension packaging.
 
