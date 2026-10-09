@@ -2,3 +2,4 @@ themes/*
 vsc-extension-quickstart.md
 node_modules/
 vs-verilog-*
+out/*
