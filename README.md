@@ -14,17 +14,20 @@ For simplicity, the extension comes preloaded with all required modules and file
 
 ## Release Notes
 
-### 0.0.1
-Basic working features implemented.
+### 0.0.6
+Adding code snippets and adding package.yml for extension packaging.
 
-### 0.0.2
-Automated theme switching for convenience.
-
-### 0.0.3
-Fixed an erroneous `missing semicolon` error.
+### 0.0.5
+Fixed auto-indentation for begin/end and similar blocks.
 
 ### 0.0.4
 Added more granular scopes, switched from auto theme switching to using predefined token scopes to allow compatability with normal themes.
 
-### 0.0.5
-Fixed auto-indentation for begin/end and similar blocks.
+### 0.0.3
+Fixed an erroneous `missing semicolon` error.
+
+### 0.0.2
+Automated theme switching for convenience.
+
+### 0.0.1
+Basic working features implemented.

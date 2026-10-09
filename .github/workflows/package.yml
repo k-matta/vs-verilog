@@ -1,0 +1,44 @@
+name: Package VS Code Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/configure-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Install project production dependencies if any exist
+      - name: Install Dependencies
+        run: npm install --omit=dev
+
+      # Manually compile your specific TypeScript file to the out directory
+      - name: Compile TypeScript
+        run: npx typescript tsc ./src/syntax.ts --outDir ./out/
+
+      # Package everything into a .vsix file
+      - name: Package Extension (.vsix)
+        run: npx @vscode/vsce package --no-dependencies
+
+      # Upload the finished .vsix to your GitHub Actions build summary
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension
+          path: "*.vsix"
+          if-no-files-found: error

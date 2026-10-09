@@ -1,0 +1,17 @@
+{
+	"begin-end": {
+		"prefix": ["begin"],
+		"body": ["begin", "\t$0", "end"],
+		"description": "A verilog begin-end block."
+	},
+	"case-endcase": {
+		"prefix": ["case"],
+		"body": ["case", "\t$0", "endcase"],
+		"description": "A verilog case-endcase block."
+	},
+	"module-endmodule": {
+		"prefix": ["module"],
+		"body": ["module ${1:module_name}", "$0", "endmodule"],
+		"description": "A verilog module definition."
+	}
+}
