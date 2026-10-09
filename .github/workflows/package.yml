@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -27,18 +29,35 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Set extension name
+      - name: Read Extension Metadata
+        id: metadata
+        run: |
+          echo "EXT_NAME=$(node -p "require('./package.json').name")" >> $GITHUB_ENV
+          echo "EXT_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
       # Manually compile your specific TypeScript file to the out directory
       - name: Compile TypeScript
         run: npx tsc ./src/syntax.ts --outDir ./out/
 
       # Package everything into a .vsix file
       - name: Package Extension (.vsix)
-        run: npx @vscode/vsce package --no-dependencies
+        run: |
+          npx @vscode/vsce package --no-dependencies
+          mv *.vsix "${{ env.EXT_NAME }}-v${{ env.EXT_VERSION }}.vsix"
 
       # Upload the finished .vsix to your GitHub Actions build summary
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vscode-extension
-          path: "*.vsix"
+          name: ${{ env.EXT_NAME }}-v${{ env.EXT_VERSION }}
+          path: "${{ env.EXT_NAME }}-v${{ env.EXT_VERSION }}.vsix"
           if-no-files-found: error
+
+      # AUTOMATIC RELEASES: Triggers ONLY when you target and push a tag
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "${{ env.EXT_NAME }}-v${{ env.EXT_VERSION }}.vsix"
+          generate_release_notes: true
