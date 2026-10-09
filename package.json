@@ -10,7 +10,7 @@
   "categories": [
     "Programming Languages",
     "Themes",
-	"Snippets"
+    "Snippets"
   ],
   "contributes": {
     "languages": [
@@ -19,8 +19,8 @@
         "aliases": [
           "SystemVerilog",
           "systemverilog",
-		  "verilog",
-		  "Verilog"
+          "verilog",
+          "Verilog"
         ],
         "extensions": [
           ".vs",
@@ -36,15 +36,16 @@
         "path": "./syntaxes/systemverilog.tmLanguage.json"
       }
     ],
-	"snippets": [
-		{
-			"language": "systemverilog",
-			"path": "./snippets/snippets.json"
-		}
-	]
+    "snippets": [
+      {
+        "language": "systemverilog",
+        "path": "./snippets/snippets.json"
+      }
+    ]
   },
   "devDependencies": {
-    "@types/vscode": "^1.140.0"
+    "@types/vscode": "^1.140.0",
+    "typescript": "^7.0.2"
   },
   "main": "./out/syntax.js"
 }

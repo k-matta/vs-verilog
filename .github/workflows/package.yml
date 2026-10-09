@@ -25,7 +25,7 @@ jobs:
 
       # Install project production dependencies if any exist
       - name: Install Dependencies
-        run: npm install --omit=dev
+        run: npm install
 
       # Manually compile your specific TypeScript file to the out directory
       - name: Compile TypeScript
