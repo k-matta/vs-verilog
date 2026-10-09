@@ -4,6 +4,7 @@
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
   "version": "0.0.6",
   "publisher": "Karl",
+  "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
     "vscode": "^1.135.0"
   },
