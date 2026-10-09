@@ -42,11 +42,19 @@
         "language": "systemverilog",
         "path": "./snippets/snippets.json"
       }
-    ]
+    ],
+	"configurationDefaults": {
+	  "[systemverilog]": {
+		  "editor.snippetSuggestions": "top"
+	  }
+	}
   },
   "devDependencies": {
     "@types/vscode": "^1.135.0",
     "typescript": "^7.0.2"
   },
-  "main": "./out/syntax.js"
+  "main": "./out/syntax.js",
+  "activationEvents": [
+	"onLanguage:systemverilog"
+  ]
 }
