@@ -2,11 +2,14 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
     "vscode": "^1.135.0"
+  },
+  "scripts": {
+    "build": "tsc ./src/ --outDir ./out"
   },
   "categories": [
     "Programming Languages",
@@ -43,18 +46,36 @@
         "path": "./snippets/snippets.json"
       }
     ],
-	"configurationDefaults": {
-	  "[systemverilog]": {
-		  "editor.snippetSuggestions": "top"
-	  }
-	}
+    "commands": [
+      {
+        "command": "systemverilog.runFile",
+        "title": "Quartus Compile",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
+          "command": "systemverilog.runFile",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configurationDefaults": {
+      "[systemverilog]": {
+        "editor.snippetSuggestions": "top"
+      }
+    }
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
     "@types/vscode": "^1.135.0",
     "typescript": "^7.0.2"
   },
-  "main": "./out/syntax.js",
+  "main": "./out/main.js",
   "activationEvents": [
-	"onLanguage:systemverilog"
+    "onLanguage:systemverilog",
+	"onCommand:systemverilog.runFile"
   ]
 }
