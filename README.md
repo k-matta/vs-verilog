@@ -22,6 +22,12 @@ Open a `.v` or `.sv` file. If you do not see syntax highlighting automatically a
 
 ## Release Notes
 
+### 0.1.1
+Minor bug fixes:
+- Outdated `package.json` build command.
+- Restored syntax error-checking
+- Began utilizing `CHANGELOG.md`
+
 ### 0.1.0
 Added Intel Quartus compilation for convenience. The extension will use whatever `.qpf` file is closest to your currently opened `.sv` file so that you can have multiple open projects simultaneously if you wish.
 
