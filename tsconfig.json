@@ -4,7 +4,8 @@
     "moduleResolution": "node16",
     "types": ["node"],
     "rootDir": "./src/",
-    "outDir": "./out"
+    "outDir": "./out",
+	"removeComments": true
   },
   "include": [
     "src/**/*"

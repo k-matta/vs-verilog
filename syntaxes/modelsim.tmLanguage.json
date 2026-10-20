@@ -1,0 +1,164 @@
+{
+	"$schema": "../schema.json",
+	"name": "ModelSim",
+	"patterns": [
+		{ "include": "#nested-objects" },
+		{ "include": "#keywords" },
+		{ "include": "#strings" },
+		{ "include": "#storages" },
+		{ "include": "#comments" },
+		{ "include": "#support" },
+		{ "include": "#constants" },
+		{ "include": "#entities" },
+		{ "include": "#variables" },
+		{ "include": "#invalid" },
+		{ "include": "#invalidadvanced-structures" }
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.modelsim",
+					"match": "(^|\\s)(set|add|view|configure|do|vlog|run|onbreak|transcript)\\b"
+				},
+				{
+					"name": "keyword.control.flow.modelsim",
+					"match": "\\b(resume|on)\\b"
+				},
+				{
+					"name": "keyword.control.loop.modelsim",
+					"match": "\\b(while|for|break|continue|always_ff|always_comb|always|initial)\\b"
+				},
+				{
+					"name": "keyword.control.conditional.modelsim",
+					"match": "\\b(if|else)\\b"
+				},
+				{
+					"name": "keyword.control.modelsim",
+					"match": "^\\`[a-z_\\-]+"
+				},
+				{
+					"name": "keyword.specifier.modelsim",
+					"match": "\\b(input|output|inout)\\b"
+				},
+				{
+					"name": "keyword.operator.comparison.modelsim",
+					"match": "==|<=|>=|<|>"
+				},
+				{
+					"name": "keyword.operator.logical.modelsim",
+					"match": "(\\b(and|or)\\b|&&|\\|\\||!|~|&|\\||\\^)"
+				},
+				{
+					"name": "keyword.define.modelsim",
+					"match": "\\b(logic|variable|integer|parameter|assign|enum|wire)\\b"
+				},
+				{
+					"name": "keyword.operator.assignment.modelsim",
+					"match": "(?<![=<>!])=(?![=])|<=|(?<!<)="
+				},
+				{
+					"name": "keyword.operator.arithmetic.modelsim",
+					"match": "\\+|-|%|\\*|((?!/)/(?!/))"
+				},
+				{
+					"name": "keyword.operator.modelsim",
+					"match": "\\@|;|:"
+				}
+			]
+		},
+		"storages": {
+			"patterns": [
+				{
+					"name": "storage.modifier.modelsim",
+					"match": "\\b(input|output)\\b"
+				},
+				{
+					"name": "storage.type.modelsim",
+					"match": "\\b(logic|variable|integer|parameter|assign|enum\\b)"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.modelsim",
+					"begin": "(/|\\./|\\.\\./)",
+					"end": "\\s",
+					"patterns": [
+						{
+							"name": "constant.character.escape.modelsim",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.modelsim",
+					"match": "\\."
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.number-sign.modelsim",
+					"match": "(#.*$)"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.numeric.integer.modelsim",
+					"match": "(\\b[0-9]+\\b)"
+				},
+				{
+					"name": "constant.character.escape.modelsim",
+					"match": "((\\\\[A-Za-z0-9])|(\\%[A-Za-z0-9]))"
+				},
+				{
+					"match": "\\b(\\d+)(n|p|m|u)s\\b",
+					"name" : "constant.numeric.integer.modelsim"
+				}
+			]
+		},
+		"support": {
+			"patterns": [
+				{
+					"match": "module\\s+([A-Za-z0-9_\\-]+)(\\s+)?\\(",
+					"captures": {
+						"1": {
+							"name": "support.class.modelsim"
+						}
+					}
+
+				}
+			]
+		},
+		"entities": {
+			"patterns": [
+				{
+					"match": "\\b(wave|save)(?!\\.)\\b",
+					"name": "entity.name.type.modelsim"
+				},
+				{
+					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|height|signalnamewidth|timeline|timelineunits|all)\\b",
+					"name": "entity.name.function.modelsim"
+				}
+			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"match": "(\\b[A-Z_][A-Z0-9_\\-]+\\b)",
+					"name": "variable.other.constant.modelsim"
+				},
+				{
+					"match": "(?<!-)(\\b[a-zA-Z_][a-zA-Z0-9_\\-]+\\b)",
+					"name": "variable.normal.modelsim"
+				}
+			]
+		}
+	},
+	"scopeName": "source.modelsim"
+}

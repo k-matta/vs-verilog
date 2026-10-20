@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
@@ -30,7 +30,19 @@
           ".vs",
           ".v"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./verilog-configuration.json"
+      },
+	  {
+        "id": "modelsim",
+        "aliases": [
+          "ModelSim TCL Macro",
+          "ModelSim",
+          "Do"
+		],
+        "extensions": [
+          ".do"
+        ],
+        "configuration": "./modelsim-configuration.json"
       }
     ],
     "grammars": [
@@ -38,6 +50,11 @@
         "language": "systemverilog",
         "scopeName": "source.systemverilog",
         "path": "./syntaxes/systemverilog.tmLanguage.json"
+      },
+	  {
+        "language": "modelsim",
+        "scopeName": "source.modelsim",
+        "path": "./syntaxes/modelsim.tmLanguage.json"
       }
     ],
     "snippets": [
@@ -51,6 +68,11 @@
         "command": "systemverilog.runFile",
         "title": "Quartus Compile",
         "icon": "$(play)"
+      },
+      {
+        "command": "modelsim.runFile",
+        "title": "ModelSim Run Simulation",
+        "icon": "$(play)"
       }
     ],
     "menus": {
@@ -59,7 +81,13 @@
           "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
           "command": "systemverilog.runFile",
           "group": "navigation"
+        },
+        {
+          "when": "editorLangId == modelsim",
+          "command": "modelsim.runFile",
+          "group": "navigation"
         }
+
       ]
     },
     "configurationDefaults": {

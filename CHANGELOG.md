@@ -2,6 +2,15 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+### 0.2.0
+Features:
+- Added some basic syntax highlighting for ModelSim `.do` files
+- Added the ability to press the "Run" button to open ModelSim and start the simulation
+
+### 0.1.2
+Minor bug fix:
+- Removed syntax validation (for now).
+
 ### 0.1.1
 Minor bug fixes:
 - Outdated `package.json` build command.
