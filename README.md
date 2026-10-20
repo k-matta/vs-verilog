@@ -22,6 +22,10 @@ Open a `.v` or `.sv` file. If you do not see syntax highlighting automatically a
 
 ## Release Notes
 
+### 0.1.2
+Minor bug fix:
+- Removed syntax validation (for now).
+
 ### 0.1.1
 Minor bug fixes:
 - Outdated `package.json` build command.
