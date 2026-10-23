@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
+  
+### 0.2.2
+Bugfix:
+- Wrapped file path in quotes to prevent issues with paths that have spaces.  
 
 ### 0.2.1
 Bugfix:

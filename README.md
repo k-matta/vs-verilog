@@ -21,6 +21,10 @@ Open a `.v` or `.sv` file. If you do not see syntax highlighting automatically a
 > To use compilation features, note that you will need to have the Quartus `bin` folder from your install directory added to your terminal `PATH` so that VS Code can use it.
 
 ## Release Notes
+### 0.2.2
+Bugfix:
+- Wrapped file path in quotes to prevent issues with paths that have spaces.
+
 ### 0.2.1
 Bugfix:
 - Added extension entrypoint for Modelsim files.

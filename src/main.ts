@@ -28,8 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		let terminal = vscode.window.terminals.find(t => t.name === "ModelSim Simulation") || vscode.window.createTerminal("ModelSim Simulation");
 		terminal.show();
-		terminal.sendText(`cd ${activeEditor.document.uri.fsPath}`);
-		terminal.sendText(`vsim -do ${activeEditor.document.fileName}`);
+		terminal.sendText(`cd "${activeEditor.document.uri.fsPath}"`);
+		terminal.sendText(`vsim -do "${activeEditor.document.fileName}"`);
 	});
 	context.subscriptions.push(runSim);
 
@@ -67,8 +67,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
 		terminal.show();
-		terminal.sendText(`cd ${fileDir}`);
-		terminal.sendText(`quartus_sh --flow compile ${filePath}`);
+		terminal.sendText(`cd "${fileDir}"`);
+		terminal.sendText(`quartus_sh --flow compile "${filePath}"`);
 	});
 	context.subscriptions.push(runSyn);
 }
