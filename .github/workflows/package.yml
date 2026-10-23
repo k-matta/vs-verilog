@@ -32,8 +32,8 @@ jobs:
           echo "EXT_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       # Manually compile your specific TypeScript file to the out directory
-      # - name: Compile TypeScript
-      #   run: npx tsc
+      - name: Compile TypeScript
+        run: npx tsc
 
       # Package everything into a .vsix file
       - name: Package Extension (.vsix)
