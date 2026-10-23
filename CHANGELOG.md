@@ -2,6 +2,10 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+### 0.2.1
+Bugfix:
+- Added extension entrypoint for Modelsim files.
+
 ### 0.2.0
 Features:
 - Added some basic syntax highlighting for ModelSim `.do` files

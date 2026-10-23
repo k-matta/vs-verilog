@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
@@ -104,6 +104,8 @@
   "main": "./out/main.js",
   "activationEvents": [
     "onLanguage:systemverilog",
-	"onCommand:systemverilog.runFile"
+    "onCommand:systemverilog.runFile",
+    "onLanguage:modelsim",
+    "onCommand:modelsim.runFile"
   ]
 }
