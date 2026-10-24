@@ -4,13 +4,11 @@ This extension is designed to improve the experience of editing SystemVerilog in
 
 ## Features
 ### Syntax Highlighting:
-The extension is designed with basic syntax highlighting for keywords, variables, numbers, etc. Begin-end (and module-endmodule and case-endcase) blocks are colour-coded the same way brackets are in most other languages for readability and debugging.
+The extension is designed with basic syntax highlighting for keywords, variables, numbers, etc. in SystemVerilog. For convenience, `begin-end` (and `module-endmodule` and `case-endcase`) blocks are colour-coded the same way brackets are in most other languages. There is also some very basic syntax highlighting for ModelSim TCL at the moment with plans to make it more extensive in the future.
 
-### Lightweight Syntax Checking
-The extension also implements some basic syntax checking including looking for missing semicolons and verifying that numbers are properly defined (i.e., only 0 and 1 used in binary and enough bits allocated for the desired value).
-
-### Quartus Compilation:
+### Quartus Compilation and ModelSim Shortcut:
 The extension utilizes the Quartus CLI to add SystemVerilog compilation directly within VS Code. Simply open a `.sv` file and press the run arrow at the top-right corner to begin compiling. The script automatically locates the `.qpf` file that is closest to the currently opened file so you can have multiple projects open in the same editor if you need to.
+The extension also uses the ModelSim CLI to open ModelSim and run `.do` files for convenience.
 
 ## Usage Instructions
 Run `curl -L -O https://github.com/k-matta/vs-verilog/releases/latest/download/vs-verilog-v0.0.6.vsix && code --uninstall-extension karl.vs-verilog & code --install-extension $(ls -1rf --sort=version | grep vs-verilog | head -n 1 | xargs -d '\n')` in the directory you want to store the extension in.
@@ -19,51 +17,3 @@ Open a `.v` or `.sv` file. If you do not see syntax highlighting automatically a
 
 > # A Note on Compiling:
 > To use compilation features, note that you will need to have the Quartus `bin` folder from your install directory added to your terminal `PATH` so that VS Code can use it.
-
-## Release Notes
-### 0.2.2
-Bugfix:
-- Wrapped file path in quotes to prevent issues with paths that have spaces.
-
-### 0.2.1
-Bugfix:
-- Added extension entrypoint for Modelsim files.
-
-### 0.2.0
-Features:
-- Added some basic syntax highlighting for ModelSim `.do` files
-- Added the ability to press the "Run" button to open ModelSim and start the simulation
-
-### 0.1.2
-Minor bug fix:
-- Removed syntax validation (for now).
-
-### 0.1.1
-Minor bug fixes:
-- Outdated `package.json` build command.
-- Restored syntax error-checking
-- Began utilizing `CHANGELOG.md`
-
-### 0.1.0
-Added Intel Quartus compilation for convenience. The extension will use whatever `.qpf` file is closest to your currently opened `.sv` file so that you can have multiple open projects simultaneously if you wish.
-
-### 0.0.7
-Forced code snippets to be the top suggestion.
-
-### 0.0.6
-Adding code snippets and adding package.yml for extension packaging.
-
-### 0.0.5
-Fixed auto-indentation for begin/end and similar blocks.
-
-### 0.0.4
-Added more granular scopes, switched from auto theme switching to using predefined token scopes to allow compatability with normal themes.
-
-### 0.0.3
-Fixed an erroneous `missing semicolon` error.
-
-### 0.0.2
-Automated theme switching for convenience.
-
-### 0.0.1
-Basic working features implemented.
