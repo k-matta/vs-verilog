@@ -64,11 +64,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const filePath = targetFileUri.fsPath;
 		const fileDir = path.dirname(filePath);
+		const fileName = filePath.split("\\")[filePath.split("\\").length-1];
 
 		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
-		terminal.sendText(`quartus_sh --flow compile "${filePath}"`);
+		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
 	});
 	context.subscriptions.push(runSyn);
 }
