@@ -2,6 +2,10 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+## v0.3.0
+### Added:
+- Tested and added ability to flash and compile and flash Quartus projects to an FPGA.
+
 ## v0.2.4
 ### Added:
 - Added an extension button to download the latest version of VS-Verilog.

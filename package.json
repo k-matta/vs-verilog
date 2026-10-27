@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
@@ -74,7 +74,16 @@
           "title": "Quartus Compile",
           "icon": "$(wrench)"
         },
-        
+        {
+          "command": "systemverilog.flashFile",
+          "title": "Flash Quartus Program",
+          "icon": "$(play-circle)"
+        },
+        {
+          "command": "systemverilog.compileAndFlashFile",
+          "title": "Compile and Flash Quartus Program",
+          "icon": "$(run)"
+        },
         {
           "command": "modelsim.runFile",
           "title": "ModelSim Run Simulation",
@@ -93,7 +102,16 @@
           "command": "systemverilog.compile",
           "group": "navigation"
         },
-        
+        {
+          "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
+          "command": "systemverilog.compileAndFlashFile",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
+          "command": "systemverilog.flashFile",
+          "group": "navigation"
+        },
         {
           "when": "editorLangId == modelsim",
           "command": "modelsim.runFile",
