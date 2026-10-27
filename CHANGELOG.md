@@ -2,6 +2,11 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+## v0.2.4
+### Added:
+- Added an extension button to download the latest version of VS-Verilog.
+- Begun development on a button to also flash to the FPGA.
+
 ## v0.2.3
 ### Fixed:
 - Switched to using file name instead of file path for Quartus compilation
@@ -26,7 +31,7 @@ All notable changes to the "vs-verilog" extension will be documented in this fil
 - Added extension entrypoint for Modelsim files.
 
 ## 0.2.0
-### Added::
+### Added:
 - Added some basic syntax highlighting for ModelSim `.do` files
 - Added the ability to press the "Run" button to open ModelSim and start the simulation
 

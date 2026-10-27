@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
@@ -32,13 +32,13 @@
         ],
         "configuration": "./verilog-configuration.json"
       },
-	  {
+      {
         "id": "modelsim",
         "aliases": [
           "ModelSim TCL Macro",
           "ModelSim",
           "Do"
-		],
+        ],
         "extensions": [
           ".do"
         ],
@@ -51,7 +51,7 @@
         "scopeName": "source.systemverilog",
         "path": "./syntaxes/systemverilog.tmLanguage.json"
       },
-	  {
+      {
         "language": "modelsim",
         "scopeName": "source.modelsim",
         "path": "./syntaxes/modelsim.tmLanguage.json"
@@ -64,30 +64,59 @@
       }
     ],
     "commands": [
-      {
-        "command": "systemverilog.runFile",
-        "title": "Quartus Compile",
-        "icon": "$(play)"
-      },
-      {
-        "command": "modelsim.runFile",
-        "title": "ModelSim Run Simulation",
-        "icon": "$(play)"
-      }
+        {
+          "command": "update",
+          "title": "Update VS-Verilog",
+          "icon": "$(cloud-download)"
+        },
+        {
+          "command": "systemverilog.compile",
+          "title": "Quartus Compile",
+          "icon": "$(wrench)"
+        },
+        // {
+        //   "command": "systemverilog.flashFile",
+        //   "title": "Flash Quartus Program",
+        //   "icon": "$(play-circle)"
+        // },
+        // {
+        //   "command": "systemverilog.compileAndFlashFile",
+        //   "title": "Compile and Flash Quartus Program",
+        //   "icon": "$(run)"
+        // },
+        {
+          "command": "modelsim.runFile",
+          "title": "ModelSim Run Simulation",
+          "icon": "$(play)"
+        }
     ],
     "menus": {
       "editor/title/run": [
         {
+            "when": "editorLangId == systemverilog || editorLangId == modelsim",
+            "command": "update",
+            "group": "7_modification"
+        },
+        {
           "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
-          "command": "systemverilog.runFile",
+          "command": "systemverilog.compile",
           "group": "navigation"
         },
+        // {
+        //   "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
+        //   "command": "systemverilog.compileAndFlashFile",
+        //   "group": "navigation"
+        // },
+        // {
+        //   "when": "editorLangId == systemverilog && workspaceFolderCount > 0",
+        //   "command": "systemverilog.flashFile",
+        //   "group": "navigation"
+        // },
         {
           "when": "editorLangId == modelsim",
           "command": "modelsim.runFile",
           "group": "navigation"
         }
-
       ]
     },
     "configurationDefaults": {

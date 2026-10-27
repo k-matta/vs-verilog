@@ -1,25 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { error } from 'console';
 
 export function activate(context: vscode.ExtensionContext) {
 	// 1. Create a collection to hold your syntax errors
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('systemverilog');
 	context.subscriptions.push(diagnosticCollection);
 
-	// 2. Trigger validation when a file opens or changes
-	// if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document) {
-		// 	validateDocument(vscode.window.activeTextEditor.document, diagnosticCollection);
-		// }
-		
-	// context.subscriptions.push(
-	// 	vscode.workspace.onDidOpenTextDocument(doc => validateDocument(doc, diagnosticCollection))
-	// );
-	
-	// context.subscriptions.push(
-		// 	vscode.workspace.onDidChangeTextDocument(event => validateDocument(event.document, diagnosticCollection))
-	// );
-		
 	let runSim = vscode.commands.registerCommand('modelsim.runFile', () => {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (!activeEditor || !activeEditor.document) {
@@ -33,8 +19,67 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(runSim);
 
-	let runSyn = vscode.commands.registerCommand('systemverilog.runFile', async () => {
-		const activeEditor = vscode.window.activeTextEditor;
+	let runSyn = vscode.commands.registerCommand('systemverilog.compile', async () => {
+		const output = await getQuartusProject();
+		if (!output) {
+			return;
+		}
+		const {fileDir, fileName} = output;
+		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
+		terminal.show();
+		terminal.sendText(`cd "${fileDir}"`);
+		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
+	});
+	context.subscriptions.push(runSyn);
+
+	let synAndFlash = vscode.commands.registerCommand('systemverilog.compileAndFlashFile', async () => {
+		const output = await getQuartusProject();
+		if (!output) {
+			return;
+		}
+		const {fileDir, fileName} = output;
+		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
+		terminal.show();
+		terminal.sendText(`cd "${fileDir}"`);
+		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
+		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+	});
+	context.subscriptions.push(synAndFlash);
+
+	let flashCode = vscode.commands.registerCommand('systemverilog.flashFile', async () => {
+		const output = await getQuartusProject();
+		if (!output) {
+			return;
+		}
+		const {fileDir, fileName} = output;
+		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.terminals.find(t => t.name === "Quartus Flash") || vscode.window.createTerminal("Quartus Flash");
+		terminal.show();
+		terminal.sendText(`cd "${fileDir}"`);
+		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+	});
+	context.subscriptions.push(flashCode);
+
+	let downlaodNew = vscode.commands.registerCommand('update', async () => {
+		let terminal;
+		const OS = process.platform;
+		if (OS == "win32")  {
+			terminal = vscode.window.createTerminal("Powershell", "powershell");
+			terminal.show();
+			terminal.sendText(`cd ~/Downloads`);
+			terminal.sendText(`$RELEASE=$(Invoke-WebRequest -Uri "https://api.github.com/repos/k-matta/vs-verilog/releases/latest" -UseBasicParsing | ConvertFrom-Json).assets[0].name | tr -d '"'; Invoke-WebRequest -Uri "https://github.com/k-matta/vs-verilog/releases/latest/download/$RELEASE" -OutFile "./$RELEASE" -UseBasicParsing`)
+		} else {
+			terminal = vscode.window.createTerminal("bash", 'bash');
+			terminal.show();
+			terminal.sendText(`cd ~/Downloads`);
+			terminal.sendText(`RELEASE=$(curl -s https://api.github.com/repos/k-matta/vs-verilog/releases/latest | jq ".assets[0].name" | tr -d '"') && curl -L -O "https://github.com/k-matta/vs-verilog/releases/latest/download/$RELEASE"`);
+		}
+		terminal.sendText('echo "Please open the Extensions Menu => 3 dots at the top => Install from VSIX... => Select the most recent version (in your \'Downloads\' folder)."');
+	});
+	context.subscriptions.push(downlaodNew);
+}
+
+async function getQuartusProject() {
+	const activeEditor = vscode.window.activeTextEditor;
 		if (!activeEditor || !activeEditor.document) {
 			vscode.window.showErrorMessage("No editor open. Please open a SystemVerilog project file to compile.");
 			return;
@@ -64,14 +109,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const filePath = targetFileUri.fsPath;
 		const fileDir = path.dirname(filePath);
-		const fileName = filePath.split("\\")[filePath.split("\\").length-1];
-
-		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
-		terminal.show();
-		terminal.sendText(`cd "${fileDir}"`);
-		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
-	});
-	context.subscriptions.push(runSyn);
+		const fileName = filePath.split("/")[filePath.split("/").length-1];
+		return {fileDir, fileName};
 }
 
 // function validateDocument(document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {
