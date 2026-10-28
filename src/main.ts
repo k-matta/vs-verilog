@@ -6,6 +6,15 @@ export function activate(context: vscode.ExtensionContext) {
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('systemverilog');
 	context.subscriptions.push(diagnosticCollection);
 
+	const folders = vscode.workspace.workspaceFolders;
+	const [rootFolderUri, rootFolderPath] = getRootFolder();
+	if (!folders || folders.length <= 0) {
+		vscode.window.showErrorMessage("No workspace is open.");
+	}
+     
+    
+    console.log(`Project Root Path: ${rootFolderPath}`);
+
 	let runSim = vscode.commands.registerCommand('modelsim.runFile', () => {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (!activeEditor || !activeEditor.document) {
@@ -14,8 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		let terminal = vscode.window.terminals.find(t => t.name === "ModelSim Simulation") || vscode.window.createTerminal("ModelSim Simulation");
 		terminal.show();
-		terminal.sendText(`cd "${activeEditor.document.uri.fsPath}"`);
-		terminal.sendText(`vsim -do "${activeEditor.document.fileName}"`);
+		terminal.sendText(`cd "${activeEditor.document.fileName.split("/").slice(0, activeEditor.document.fileName.split("/").length-1).join("/")}"`);
+		terminal.sendText(`vsim -do "${activeEditor.document.fileName.split("/")[activeEditor.document.fileName.split("/").length-1]}"`);
+		terminal.sendText(`vsim -do "${activeEditor.document.fileName.split("/")[activeEditor.document.fileName.split("/").length-1]}"`);
 	});
 	context.subscriptions.push(runSim);
 
@@ -42,10 +52,11 @@ export function activate(context: vscode.ExtensionContext) {
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
 		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
-		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+		terminal.sendText(`if ($LASTEXITCODE) { Write-Output "ERROR: Cannot compile due to build errors." } else { quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" }`);
+		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(synAndFlash);
-
+	
 	let flashCode = vscode.commands.registerCommand('systemverilog.flashFile', async () => {
 		const output = await getQuartusProject();
 		if (!output) {
@@ -56,9 +67,10 @@ export function activate(context: vscode.ExtensionContext) {
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
 		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(flashCode);
-
+	
 	let downlaodNew = vscode.commands.registerCommand('update', async () => {
 		let terminal;
 		const OS = process.platform;
@@ -74,8 +86,19 @@ export function activate(context: vscode.ExtensionContext) {
 			terminal.sendText(`RELEASE=$(curl -s https://api.github.com/repos/k-matta/vs-verilog/releases/latest | jq ".assets[0].name" | tr -d '"') && curl -L -O "https://github.com/k-matta/vs-verilog/releases/latest/download/$RELEASE"`);
 		}
 		terminal.sendText('echo "Please open the Extensions Menu => 3 dots at the top => Install from VSIX... => Select the most recent version (in your \'Downloads\' folder)."');
+		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(downlaodNew);
+}
+
+function getRootFolder() {
+	const workspaceFolders = vscode.workspace.workspaceFolders;
+	if (workspaceFolders && workspaceFolders.length > 0) {
+		// This gives you the root folder of the first workspace
+		return [workspaceFolders[0].uri, workspaceFolders[0].uri.fsPath]; 
+	}
+	vscode.window.showErrorMessage("No folder open.");
+	return [null, null];
 }
 
 async function getQuartusProject() {

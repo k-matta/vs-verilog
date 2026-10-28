@@ -147,7 +147,7 @@
 		"entities": {
 			"patterns": [
 				{
-					"match": "(\\b[A-Za-z0-9_\\-]+\\s)([A-Za-z0-9_\\-]+)(\\s*\\()",
+					"match": "(\\b[a-zA-Z_]([a-zA-Z0-9_\\-]+)?\\s)(\\b[a-zA-Z_]([a-zA-Z0-9_\\-]+)?)(\\s*\\()",
 					"captures": {
 						"1": {
 							"name": "entity.name.function.systemverilog"

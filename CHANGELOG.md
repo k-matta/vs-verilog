@@ -2,6 +2,12 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+## v0.3.1
+### Fixed:
+- Fixed how paths are used in the terminal for Quartus and ModelSim commands.
+- Updated README with project changes.
+- Small fix to syntax highlighting.
+
 ## v0.3.0
 ### Added:
 - Tested and added ability to flash and compile and flash Quartus projects to an FPGA.
