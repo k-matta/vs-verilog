@@ -2,6 +2,10 @@
 
 All notable changes to the "vs-verilog" extension will be documented in this file.
 
+## v0.3.2
+### Fixed:
+- Fixed Quartus compile commands for Windows vs. Linux.
+
 ## v0.3.1
 ### Fixed:
 - Fixed how paths are used in the terminal for Quartus and ModelSim commands.

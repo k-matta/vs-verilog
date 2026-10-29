@@ -6,14 +6,10 @@ export function activate(context: vscode.ExtensionContext) {
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('systemverilog');
 	context.subscriptions.push(diagnosticCollection);
 
-	const folders = vscode.workspace.workspaceFolders;
+	const OS = process.platform;
+
 	const [rootFolderUri, rootFolderPath] = getRootFolder();
-	if (!folders || folders.length <= 0) {
-		vscode.window.showErrorMessage("No workspace is open.");
-	}
-     
-    
-    console.log(`Project Root Path: ${rootFolderPath}`);
+	console.log(`Project Root Path: ${rootFolderPath}`);
 
 	let runSim = vscode.commands.registerCommand('modelsim.runFile', () => {
 		const activeEditor = vscode.window.activeTextEditor;
@@ -48,11 +44,15 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 		const {fileDir, fileName} = output;
-		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
+		let terminal;
+		if (OS == "win32")
+			terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "powershell");
+		else terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "bash");
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
 		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
-		terminal.sendText(`if ($LASTEXITCODE) { Write-Output "ERROR: Cannot compile due to build errors." } else { quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" }`);
+		if (OS == "win32") terminal.sendText(`if ("$LASTEXITCODE") { Write-Output "ERROR: Cannot compile due to build errors." } else { quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" }`);
+		else terminal.sendText(`[ $? -eq 0 ] && quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" || echo "ERROR: Cannot compile due to build errors."`);
 		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(synAndFlash);
@@ -73,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	let downlaodNew = vscode.commands.registerCommand('update', async () => {
 		let terminal;
-		const OS = process.platform;
 		if (OS == "win32")  {
 			terminal = vscode.window.createTerminal("Powershell", "powershell");
 			terminal.show();
