@@ -2,7 +2,7 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
@@ -66,7 +66,7 @@
     "commands": [
         {
           "command": "update",
-          "title": "Update VS-Verilog",
+          "title": "Update VS Verilog",
           "icon": "$(cloud-download)"
         },
         {
@@ -90,6 +90,27 @@
           "icon": "$(play)"
         }
     ],
+	"configuration": {
+      "title": "VS Verilog",
+      "properties": {
+        "VS_Verilog.update": {
+          "type": "string",
+		  "enum": ["notify", "install", "none"],
+          "default": "notify",
+          "description": "Controls whether new versions of the extension are installed automatically."
+        },
+        "VS_Verilog.downloadDir": {
+          "type": "string",
+          "default": "~/Downloads",
+          "description": "The directory that new extension versions will be downloaded to."
+        },
+        "VS_Verilog.remove": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to automatically remove the downloaded VSIX file after installing."
+        }
+      }
+    },
     "menus": {
       "editor/title/run": [
         {
@@ -135,6 +156,7 @@
     "onLanguage:systemverilog",
     "onCommand:systemverilog.runFile",
     "onLanguage:modelsim",
-    "onCommand:modelsim.runFile"
+    "onCommand:modelsim.runFile",
+	"onStartupFinished"
   ]
 }

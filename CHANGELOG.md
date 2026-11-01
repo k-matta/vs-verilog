@@ -1,6 +1,11 @@
 # Change Log
 
-All notable changes to the "vs-verilog" extension will be documented in this file.
+## What's new in VS Verilog
+
+## v0.4.0
+### Added:
+- Added automatic updates/update notifications on startup.
+- Made this changelog automatically appear after an update.
 
 ## v0.3.2
 ### Fixed:
