@@ -2,6 +2,14 @@
 
 ## What's new in VS Verilog
 
+## v0.4.1
+### Changed:
+- Syntax Highlighting:
+  - Made highlighting for `default_netlist more specific.
+  - Added highlighting for `$signed` and `$unsigned` syntax.
+- Snippets:
+  - Improved the snippet for `case-endcase` blocks.
+
 ## v0.4.0
 ### Added:
 - Added automatic updates/update notifications on startup.

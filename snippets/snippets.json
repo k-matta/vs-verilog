@@ -6,7 +6,7 @@
 	},
 	"case-endcase": {
 		"prefix": ["case"],
-		"body": ["case", "\t$0", "endcase"],
+		"body": ["case (${1:state_variable})", "\t$0", "endcase"],
 		"description": "A verilog case-endcase block."
 	},
 	"module-endmodule": {
