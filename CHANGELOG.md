@@ -2,10 +2,17 @@
 
 ## What's new in VS Verilog
 
+## v0.4.3
+### Changed:
+- Syntax Highlighting:
+  - Minor improvements to TCL.
+ ### Fixed:
+- Fixed a bug in command-based `cd` navigation on Windows
+
 ## v0.4.2
 ### Changed:
 - Syntax Highlighting:
-  - Minor improvements to both Verilog and TCL,
+  - Minor improvements to both Verilog and TCL.
 
 ## v0.4.1
 ### Changed:

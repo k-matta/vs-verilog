@@ -146,7 +146,7 @@
 					"name": "entity.name.type.modelsim"
 				},
 				{
-					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|height|signal|name|width|timeline|timeline|units|all|work)\\b",
+					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|uns|height|signalnamewidth|timeline|timelineunits|all|work)\\b",
 					"name": "entity.name.function.modelsim"
 				}
 			]

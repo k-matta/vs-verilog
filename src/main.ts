@@ -37,9 +37,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		let terminal = vscode.window.terminals.find(t => t.name === "ModelSim Simulation") || vscode.window.createTerminal("ModelSim Simulation");
 		terminal.show();
-		terminal.sendText(`cd "${activeEditor.document.fileName.split("/").slice(0, activeEditor.document.fileName.split("/").length - 1).join("/")}"`);
-		terminal.sendText(`vsim -do "${activeEditor.document.fileName.split("/")[activeEditor.document.fileName.split("/").length - 1]}"`);
-		terminal.sendText(`vsim -do "${activeEditor.document.fileName.split("/")[activeEditor.document.fileName.split("/").length - 1]}"`);
+		let path;
+		let file;
+		if (OS == "win32") {
+			path = activeEditor.document.fileName.split("\\").slice(0, activeEditor.document.fileName.split("\\").length - 1).join("\\");
+			file = activeEditor.document.fileName.split("\\")[activeEditor.document.fileName.split("\\").length - 1];
+		} else {
+			path = activeEditor.document.fileName.split("/").slice(0, activeEditor.document.fileName.split("/").length - 1).join("/");
+			file = activeEditor.document.fileName.split("/")[activeEditor.document.fileName.split("/").length - 1];
+		}
+		console.log(OS, path, file);
+		terminal.sendText(`cd "${path}"`);
+		terminal.sendText(`vsim -do "${file}"`);
 	});
 	context.subscriptions.push(runSim);
 
@@ -152,7 +161,6 @@ async function update(context: vscode.ExtensionContext, config: vscode.Workspace
 					// Prompt or force a window reload to apply the upgrade
 					console.log("Restarting");
 					vscode.commands.executeCommand('workbench.action.reloadWindow');
-					await new Promise(resolve => setTimeout(resolve, 500));
 				} catch (e) {
 					console.error(e);
 					vscode.window.showErrorMessage("Failed to update extension");
@@ -418,7 +426,7 @@ function findClosestFile(referencePath: string, fileUris: vscode.Uri[]): vscode.
 
 	for (const uri of fileUris) {
 		const relativePath = path.relative(referencePath, uri.fsPath);
-		const hops = relativePath.split(path.sep).filter((segment: String) => segment !== '' && segment !== '.').length;
+		const hops = relativePath.split(path.sep).filter((segment: string) => segment !== '' && segment !== '.').length;
 		if (hops < minDistance) {
 			minDistance = hops;
 			closestUri = uri;
