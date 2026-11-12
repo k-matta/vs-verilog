@@ -19,7 +19,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.modelsim",
-					"match": "(^|\\s)(set|add|view|configure|do|vlog|run|onbreak|transcript)\\b"
+					"match": "(^|\\s)(set|add|view|configure|do|vlog|run|on|break|transcript)\\b"
 				},
 				{
 					"name": "keyword.control.flow.modelsim",
@@ -31,7 +31,11 @@
 				},
 				{
 					"name": "keyword.control.conditional.modelsim",
-					"match": "\\b(if|else)\\b"
+					"match": "\\belse\\b"
+				},
+				{
+					"name": "keyword.control.conditional.modelsim",
+					"match": "\\b(if)\\s?{[.*]}\\b"
 				},
 				{
 					"name": "keyword.control.modelsim",
@@ -142,7 +146,7 @@
 					"name": "entity.name.type.modelsim"
 				},
 				{
-					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|height|signalnamewidth|timeline|timelineunits|all)\\b",
+					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|height|signal|name|width|timeline|timeline|units|all|work)\\b",
 					"name": "entity.name.function.modelsim"
 				}
 			]

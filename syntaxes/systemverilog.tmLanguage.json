@@ -3,12 +3,12 @@
 	"name": "SystemVerilog",
 	"patterns": [
 		{ "include": "#nested-objects" },
+		{ "include": "#constants" },
 		{ "include": "#keywords" },
 		{ "include": "#strings" },
 		{ "include": "#storages" },
 		{ "include": "#comments" },
 		{ "include": "#support" },
-		{ "include": "#constants" },
 		{ "include": "#entities" },
 		{ "include": "#variables" },
 		{ "include": "#invalid" },
@@ -124,19 +124,23 @@
 			"patterns": [
 				{
 					"name": "constant.numeric.binary.systemverilog",
-					"match": "\\b[0-9]*'b[01]+\\b"
+					"match": "\\b[0-9]*'(s)?b[01]+\\b"
 				},
 				{
 					"name": "constant.numeric.octal.systemverilog",
-					"match": "\\b[0-9]*'o[0-7]+\\b"
+					"match": "\\b[0-9]*'(s)?o[0-7]+\\b"
 				},
 				{
 					"name": "constant.numeric.decimal.systemverilog",
-					"match": "\\b[0-9]*'d[0-9]+\\b"
+					"match": "-[0-9]*'sd[0-9]+\\b"
+				},
+				{
+					"name": "constant.numeric.decimal.systemverilog",
+					"match": "\\b(?!-)[0-9]*'d[0-9]+\\b"
 				},
 				{
 					"name": "constant.numeric.hexadecimal.systemverilog",
-					"match": "\\b[0-9]*'h[0-9A-Fa-f]+\\b"
+					"match": "\\b[0-9]*'(s)?h[0-9A-Fa-f]+\\b"
 				},
 				{
 					"name": "constant.numeric.integer.systemverilog",
@@ -169,7 +173,7 @@
 						"1": {
 							"name": "entity.name.function.systemverilog"
 						},
-						"2": {
+						"3": {
 							"name": "entity.name.type.systemverilog"
 						}
 					}
