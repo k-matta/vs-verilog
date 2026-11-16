@@ -156,7 +156,7 @@ async function update(context: vscode.ExtensionContext, config: vscode.Workspace
 						console.log("Removal complete.")
 					}
 
-					context.workspaceState.update("openChanges", `${path.join(os.homedir(), "/.vscode/extensions/", context.extension.packageJSON.publisher.toLowerCase() + "." + name.split("-v").slice(0, 2).join("-v") + "-" + name.split("-v")[2].slice(0, name.split("-v")[2].indexOf(".vsix")), "/changelog.md")}`);
+					context.workspaceState.update("openChanges", `${path.join(os.homedir(), ".vscode", "extensions", context.extension.packageJSON.publisher.toLowerCase() + "." + name.split("-v").slice(0, 2).join("-v") + "-" + name.split("-v")[2].slice(0, name.split("-v")[2].indexOf(".vsix")), "changelog.md")}`);
 
 					// Prompt or force a window reload to apply the upgrade
 					console.log("Restarting");
