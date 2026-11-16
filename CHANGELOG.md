@@ -2,6 +2,11 @@
 
 ## What's new in VS Verilog
 
+## v0.4.4
+### Changed:
+- Minor adjustment to TCL syntax highlighting
+- Working on fix to open changelog after an update
+
 ## v0.4.3
 ### Changed:
 - Syntax Highlighting:
