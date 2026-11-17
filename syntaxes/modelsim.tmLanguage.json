@@ -87,7 +87,7 @@
 			"patterns": [
 				{
 					"name": "string.quoted.double.modelsim",
-					"begin": "(/|\\./|\\.\\./)",
+					"begin": "^(?!.*\\{[^}\\r\\n]*$)(/|\\./|\\.\\./)",
 					"end": "\\s",
 					"patterns": [
 						{
@@ -146,7 +146,7 @@
 					"name": "entity.name.type.modelsim"
 				},
 				{
-					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|dec|uns|height|signalnamewidth|timeline|timelineunits|all|work)\\b",
+					"match": "\\s*-(sv|decimal|divider|unsigned|bin|hex|dec|uns|height|signalnamewidth|timeline|timelineunits|all|work|label)\\b",
 					"name": "entity.name.function.modelsim"
 				}
 			]

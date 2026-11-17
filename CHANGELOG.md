@@ -2,6 +2,11 @@
 
 ## What's new in VS Verilog
 
+## v0.4.5
+### Changed:
+- Minor adjustment to SystemVerilog and TCL syntax highlighting
+- Stopped unnecessary auto-indentation in `.do` files
+
 ## v0.4.4
 ### Changed:
 - Minor adjustment to TCL syntax highlighting
