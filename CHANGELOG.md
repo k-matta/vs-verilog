@@ -2,6 +2,14 @@
 
 ## What's new in VS Verilog
 
+## v0.4.7
+### Changed:
+- Reduced minimum VS Code version for better compatability.
+
+## v0.4.6
+### Changed:
+- Moved Windows compilation to Bash for parity with Linux.
+
 ## v0.4.5
 ### Changed:
 - Minor adjustment to SystemVerilog and TCL syntax highlighting
