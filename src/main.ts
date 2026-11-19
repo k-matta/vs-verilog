@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage("No editor open. Please open a ModelSim '.do' file to run the simulation.");
 			return;
 		}
-		let terminal = vscode.window.terminals.find(t => t.name === "ModelSim Simulation") || vscode.window.createTerminal("ModelSim Simulation");
+		const terminal = vscode.window.terminals.find(t => t.name === "ModelSim Simulation") || vscode.window.createTerminal("ModelSim Simulation");
 		terminal.show();
 		let path;
 		let file;
@@ -53,12 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(runSim);
 
 	let runSyn = vscode.commands.registerCommand('systemverilog.compile', async () => {
-		const output = await getQuartusProject();
+		const output = await getQuartusProject(OS);
 		if (!output) {
 			return;
 		}
 		const { fileDir, fileName } = output;
-		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
+		const terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
 		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
@@ -66,26 +66,22 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(runSyn);
 
 	let synAndFlash = vscode.commands.registerCommand('systemverilog.compileAndFlashFile', async () => {
-		const output = await getQuartusProject();
+		const output = await getQuartusProject(OS);
 		if (!output) {
 			return;
 		}
 		const { fileDir, fileName } = output;
-		let terminal;
-		if (OS == "win32")
-			terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "powershell");
-		else terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "bash");
+		const terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "bash");
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
 		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
-		if (OS == "win32") terminal.sendText(`if ("$LASTEXITCODE") { Write-Output "ERROR: Cannot compile due to build errors." } else { quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" }`);
-		else terminal.sendText(`[ $? -eq 0 ] && quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" || echo "ERROR: Cannot compile due to build errors."`);
+		terminal.sendText(`[ $? -eq 0 ] && quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;output_files/${fileName.slice(0, fileName.indexOf('.'))}.sof" || echo "ERROR: Cannot compile due to build errors."`);
 		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(synAndFlash);
 
 	let flashCode = vscode.commands.registerCommand('systemverilog.flashFile', async () => {
-		const output = await getQuartusProject();
+		const output = await getQuartusProject(OS);
 		if (!output) {
 			return;
 		}
@@ -201,7 +197,7 @@ function getRootFolder() {
 	return [null, null];
 }
 
-async function getQuartusProject() {
+async function getQuartusProject(OS: string) {
 	const activeEditor = vscode.window.activeTextEditor;
 	if (!activeEditor || !activeEditor.document) {
 		vscode.window.showErrorMessage("No editor open. Please open a SystemVerilog project file to compile.");
@@ -232,7 +228,9 @@ async function getQuartusProject() {
 
 	const filePath = targetFileUri.fsPath;
 	const fileDir = path.dirname(filePath);
-	const fileName = filePath.split("/")[filePath.split("/").length - 1];
+	let fileName;
+	if (OS == "win32") fileName = filePath.split("\\")[filePath.split("\\").length - 1];
+	else fileName = filePath.split("/")[filePath.split("/").length - 1];
 	return { fileDir, fileName };
 }
 
