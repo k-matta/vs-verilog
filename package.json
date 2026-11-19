@@ -2,11 +2,11 @@
   "name": "vs-verilog",
   "displayName": "VS Verilog",
   "description": "Verilog/SystemVerilog syntax highlighting for VS Code.",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "publisher": "Karl",
   "repository": "https://github.com/k-matta/vs-verilog.git",
   "engines": {
-    "vscode": "^1.135.0"
+    "vscode": "^1.103.0"
   },
   "scripts": {
     "build": "tsc"
