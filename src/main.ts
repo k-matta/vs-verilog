@@ -85,11 +85,11 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!output) {
 			return;
 		}
-		const { fileDir, fileName } = output;
+		const { fileDir, fileName, outputDir } = output;
 		let terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.terminals.find(t => t.name === "Quartus Flash") || vscode.window.createTerminal("Quartus Flash");
 		terminal.show();
 		terminal.sendText(`cd "${fileDir}"`);
-		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+		terminal.sendText(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;${outputDir}/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
 		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
 	});
 	context.subscriptions.push(flashCode);
@@ -231,11 +231,11 @@ async function getQuartusProject(OS: string) {
 	let fileName;
 	if (OS == "win32") fileName = filePath.split("\\")[filePath.split("\\").length - 1];
 	else fileName = filePath.split("/")[filePath.split("/").length - 1];
-	let output;
+	let outputDir;
 	const configs = fs.readFileSync(path.join(filePath, fileName.split(".")[0] + ".qsf"), "utf-8");
-	if (configs.indexOf("PROJECT_OUTPUT_DIRECTORY") == -1) output = "";
-	else output = configs.split("\n")[configs.split("\n").findIndex((line) => line.indexOf("PROJECT_OUTPUT_DIRECTORY") !== -1)].slice(configs.indexOf("PROJECT_OUTPUT_DIRECTORY") + 25);
-	return { fileDir, fileName, output };
+	if (configs.indexOf("PROJECT_OUTPUT_DIRECTORY") == -1) outputDir = "";
+	else outputDir = configs.split("\n")[configs.split("\n").findIndex((line) => line.indexOf("PROJECT_OUTPUT_DIRECTORY") !== -1)].slice(configs.indexOf("PROJECT_OUTPUT_DIRECTORY") + 25);
+	return { fileDir, fileName, outputDir };
 }
 
 // function validateDocument(document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {
