@@ -2,6 +2,16 @@
 
 ## What's new in VS Verilog
 
+## v0.5.0
+### Added:
+- Added a feature to automatically extract Quartus timing and resource usage reports and display them after compiling.
+### Fixed:
+- Minor syntax fixes.
+
+## v0.4.8
+### Fixed:
+- Fixed a bug in the path selection of Quartus output files.
+
 ## v0.4.7
 ### Changed:
 - Reduced minimum VS Code version for better compatability.

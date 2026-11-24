@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import * as os from "os";
 
 let updateCheck = false;
@@ -57,11 +57,28 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!output) {
 			return;
 		}
-		const { fileDir, fileName } = output;
-		const terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile");
+		const { fileDir, fileName, outputDir} = output;
+		const terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "bash");
 		terminal.show();
-		terminal.sendText(`cd "${fileDir}"`);
-		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
+		setTimeout(() => {
+			if (!terminal.shellIntegration) {
+				console.log("Shell integration unavailable")
+				terminal.sendText(`cd "${fileDir}"`);
+				terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
+			} else {
+				const execution = terminal.shellIntegration.executeCommand(`cd "${fileDir}" && quartus_sh --flow compile "${fileName}"`);
+				const disposable = vscode.window.onDidEndTerminalShellExecution((event) => {
+					if (event.execution === execution) {
+						disposable.dispose();
+						if (event.exitCode) {
+							vscode.window.showErrorMessage("Quartus Compilation Failed. Please see terminal for errors.");
+						} else {
+							parseQuartusCompilation(path.join(fileDir, outputDir), fileName.split(".").slice(0, fileName.split(".").length-1).join("."));
+						}
+					}
+				});
+			}
+		}, 1000);
 	});
 	context.subscriptions.push(runSyn);
 
@@ -70,13 +87,36 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!output) {
 			return;
 		}
-		const { fileDir, fileName } = output;
+		const { fileDir, fileName, outputDir } = output;
 		const terminal = vscode.window.terminals.find(t => t.name === "Quartus Compile") || vscode.window.createTerminal("Quartus Compile", "bash");
-		terminal.show();
-		terminal.sendText(`cd "${fileDir}"`);
-		terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
-		terminal.sendText(`[ $? -eq 0 ] && quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;${fileName.slice(0, fileName.indexOf('.'))}.sof" || echo "ERROR: Cannot compile due to build errors."`);
-		if (rootFolderPath) terminal.sendText(`cd "${rootFolderPath}`);
+		setTimeout(() => {
+			if (!terminal.shellIntegration) {
+				terminal.show();
+				terminal.sendText(`cd "${fileDir}"`);
+				terminal.sendText(`quartus_sh --flow compile "${fileName}"`);
+				terminal.sendText(`[ $? -eq 0 ] && quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;${outputDir}/${fileName.slice(0, fileName.indexOf('.'))}.sof" || echo "ERROR: Cannot compile due to build errors."`);
+			} else {
+				const execution = terminal.shellIntegration.executeCommand(`cd "${fileDir}" && quartus_sh --flow compile "${fileName}"`);
+				const disposable = vscode.window.onDidEndTerminalShellExecution((event) => {
+					if (event.execution === execution) {
+						disposable.dispose();
+						if (event.exitCode) {
+							vscode.window.showErrorMessage("Quartus Compilation Failed. Please see terminal for errors.");
+						} else {
+							parseQuartusCompilation(path.join(fileDir, outputDir), fileName.split(".").slice(0, fileName.split(".").length-1).join("."));
+							const flash = terminal.shellIntegration?.executeCommand(`quartus_pgm -c "$(quartus_pgm -l | grep USB-Blaster | cut -d ' ' -f 2-)" -m JTAG -o "p;${outputDir}/${fileName.slice(0, fileName.indexOf('.'))}.sof"`);
+							const flashDispose = vscode.window.onDidEndTerminalShellExecution((flashEvent) => {
+								if (flashEvent.execution === flash) {
+									if (event.exitCode) {
+										vscode.window.showErrorMessage("Flashing to FPGA failed. Please see terminal for errors.");
+									}
+								}
+							});
+						}
+					}
+				})
+			}
+		}, 1000);
 	});
 	context.subscriptions.push(synAndFlash);
 
@@ -113,7 +153,7 @@ async function update(context: vscode.ExtensionContext, config: vscode.Workspace
 		const name = json.assets[0].name;
 		const version = name.split("-v")[2].slice(0, name.split("-v")[2].indexOf(".vsix"));
 		console.log("Latest: ", version, "\nCurrent: ", currentVersion);
-		if ((version.split(".")[0]>currentVersion.split(".")[0]) || (version.split(".")[0]==currentVersion.split(".")[0] && version.split(".")[1]>currentVersion.split(".")[1]) || (version.split(".")[0]==currentVersion.split(".")[0] && version.split(".")[1]==currentVersion.split(".")[1] && version.split(".")[2]>currentVersion.split(".")[2])) {
+		if ((version.split(".")[0] > currentVersion.split(".")[0]) || (version.split(".")[0] == currentVersion.split(".")[0] && version.split(".")[1] > currentVersion.split(".")[1]) || (version.split(".")[0] == currentVersion.split(".")[0] && version.split(".")[1] == currentVersion.split(".")[1] && version.split(".")[2] > currentVersion.split(".")[2])) {
 			if (update_override || config.get<string>("update", "notify") == "install") {
 				try {
 					// 1. Fetch the file data
@@ -232,10 +272,256 @@ async function getQuartusProject(OS: string) {
 	if (OS == "win32") fileName = filePath.split("\\")[filePath.split("\\").length - 1];
 	else fileName = filePath.split("/")[filePath.split("/").length - 1];
 	let outputDir;
-	const configs = fs.readFileSync(path.join(filePath, fileName.split(".")[0] + ".qsf"), "utf-8");
-	if (configs.indexOf("PROJECT_OUTPUT_DIRECTORY") == -1) outputDir = "";
-	else outputDir = configs.split("\n")[configs.split("\n").findIndex((line) => line.indexOf("PROJECT_OUTPUT_DIRECTORY") !== -1)].slice(configs.indexOf("PROJECT_OUTPUT_DIRECTORY") + 25);
+	const configs = fs.readFileSync(path.join(fileDir, fileName.split(".")[0] + ".qsf"), "utf-8");
+	if (configs.indexOf("PROJECT_OUTPUT_DIRECTORY") == -1) outputDir = ".";
+	else {
+		const configLines = configs.split("\n");
+		const outputDirLine = configLines.findIndex((line) => line.indexOf("PROJECT_OUTPUT_DIRECTORY") !== -1);
+		console.log(configLines[outputDirLine].slice(configLines[outputDirLine].indexOf("PROJECT_OUTPUT_DIRECTORY") + 25).trim());
+		outputDir = configLines[outputDirLine].slice(configLines[outputDirLine].indexOf("PROJECT_OUTPUT_DIRECTORY") + 25).trim();
+	}
 	return { fileDir, fileName, outputDir };
+
+}
+
+async function parseQuartusCompilation(projectDir: string, projectName: string) {
+	try {
+		const TA_lines = fs.readFileSync(path.join(projectDir, projectName) + ".sta.rpt", "utf-8").split("\n");
+		let HTML = `<!DOCTYPE html>
+<html>
+<head>
+	<title>Quartus Compilation Report</title>
+	<style>
+		:root {
+			interpolate-size: allow-keywords;
+		}
+		.dropdown {
+			transition: all 0.5s ease-in-out;
+		}
+		.padding {
+			background-color: #303030;
+			width: 100%;
+			height: 30px;
+		}
+		.dropdown-arrow {
+			width: 30px;
+			height: 30px;
+			padding: 0 0.6rem;
+			transition: rotate 0.5s ease-in-out;
+			display: inline-block;
+			rotate: 180deg;
+			filter: invert();
+			translate: 0 10px;
+		}
+		.dropdown-header {
+			background-color: #303030;
+			position: sticky;
+			left: 0;
+		}
+		h3, h4, h5, h6 {
+			margin: 0;
+			padding: 0.8rem 0;
+			display: inline-block;
+		}
+		table {
+			border-collapse: collapse;
+		}
+		th, td {
+			border: 1.5px solid #aeaeae;
+			padding: 10px;
+		}
+	</style>
+</head>
+<body>
+`;
+		let text = "# Quartus Compilation Report:";
+		HTML += `
+	<h1>Quartus Compilation Report</h1>
+	<section class="dropdown">
+		<section class="dropdown-header">
+			<img class='dropdown-arrow' src='https://cdn-icons-png.flaticon.com/512/3838/3838683.png'>
+			<h3>Timing Analysis</h3>
+		</section>`
+		text += "\n### Timing Analysis:\n";
+		const TIMING_REPORTS = ["; Slow 1200mV 85C Model Setup: ", "; Slow 1200mV 85C Model Hold: ", "; Slow 1200mV 0C Model Setup: ", "; Slow 1200mV 0C Model Hold: ", "; Fast 1200mV 0C Model Setup: ", "; Fast 1200mV 0C Model Hold: "]
+		for (let report of TIMING_REPORTS) {
+
+			const TA_data_start = TA_lines.findIndex((line) => line.startsWith(report)) + 4;
+			HTML += `
+		<section class="dropdown">
+			<section class="dropdown-header">
+				<img class='dropdown-arrow' src='https://cdn-icons-png.flaticon.com/512/3838/3838683.png'>
+				<h4>${report.slice(2, -2)}</h4>
+			</section>
+			<table>
+				<thead>
+					<tr>
+						<th>Slack</th>
+						<th>From Node</th>
+						<th>To Node</th>
+						<th>Launch Clock</th>
+						<th>Latch Clock</th>
+						<th>Relationship</th>
+						<th>Clock Skew</th>
+						<th>Data Delay</th>
+					</tr>
+				</thead>
+				<tbody>`
+			text += `\n#### ${report.slice(2, -2)}:`;
+			text += `\n| Slack | From Node | To Node | Launch Clock | Latch Clock | Relationship | Clock Skew | Data Delay |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |\n`;
+			for (let line of TA_lines.slice(TA_data_start)) {
+				if (line.startsWith("+--")) break;
+				console.log(line);
+				text += line.replaceAll("|", "\\|").replaceAll(" ; ", " | ").replaceAll("; ", "| ").replaceAll(" ;", " |") + "\n";
+				HTML += `
+						<tr>`;
+				for (let cell of line.split(";").slice(1, -1)) {
+					HTML += `
+							<td>${cell.trim()}</td>`;
+				}
+				HTML += `
+					</tr>`;
+			}
+			HTML += `
+				</tbody>
+			</table>
+		</section>`;
+		}
+		HTML += `
+	</section>`
+
+		text += "\n### Usage Report:\n";
+
+		const CATEGORIES = ["Logic Cells", "Dedicated Logic Registers", "I/O Registers", "Memory Bits", "M9Ks", "DSP Elements", "DSP 9x9", "DSP 18x18", "Pins", "Virtual Pins", "LUT-Only LCs", "Register-Only LCs", "LUT/Register LCs", "Full Hierarchy Name", "Entity Name", "Library Name"];
+
+		const UR_lines = fs.readFileSync(path.join(projectDir, projectName) + ".fit.rpt", "utf-8").split("\n");
+		text += `#### Total Project Usage:\n\n| Category | Usage |\n| :-- | :--: |\n`;
+		HTML += `
+	<section class='padding'>
+	</section>
+	<section class="dropdown">
+		<section class="dropdown-header">
+			<img class='dropdown-arrow' src='https://cdn-icons-png.flaticon.com/512/3838/3838683.png'>
+			<h3>Usage Report</h3>
+		</section>
+		<section class="dropdown">
+			<section class="dropdown-header">
+				<img class='dropdown-arrow' src='https://cdn-icons-png.flaticon.com/512/3838/3838683.png'>
+				<h4>Top-Level Module Usage</h4>
+			</section>
+			<table>
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th>Usage</th>
+					</tr>
+				</thead>
+				<tbody>`;
+		const UR_data_start = UR_lines.findIndex((line) => line.startsWith("; Fitter Resource Utilization by Entity")) + 5;
+		const projectLine = UR_lines[UR_data_start - 1];
+		console.log(UR_lines.slice(UR_data_start-5, UR_data_start+20));
+		console.log(UR_data_start, 
+			projectLine.slice(projectLine.indexOf(";", projectLine.indexOf(";")+1))
+		);
+		projectLine.slice(projectLine.indexOf(";", projectLine.indexOf(";")+1)).split(" ; ").slice(0, 13).forEach((category, index) => {
+			text += `| ${CATEGORIES[index]} | ${!index ? category.trim().slice(1) : category.trim()} |\n`;
+			HTML += `
+					<tr>
+						<td>${CATEGORIES[index]}</td>
+						<td>${!index ? category.trim().slice(1) : category.trim()}</td>
+					</tr>`;
+		});
+		text += "\n\n";
+		HTML += `
+				</tbody>
+			</table>
+		</section>`;
+		for (let line of UR_lines.slice(UR_data_start)) {
+			if (line.startsWith("+--")) break;
+			const lineArray = line.slice(line.indexOf(";", line.indexOf(";")+1)).split(" ; ");
+			HTML += `
+		<section class="dropdown">
+			<section class="dropdown-header">
+				<img class='dropdown-arrow' src='https://cdn-icons-png.flaticon.com/512/3838/3838683.png'>
+				<h4>${lineArray[14].trim() + " Usage"}</h4>
+			</section>
+			<table>
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th>Usage</th>
+					</tr>
+				</thead>
+				<tbody>`
+			text += "#### " + lineArray[14].trim() + " Usage:\n\n| Category | Usage |\n| :-- | :--: |\n";
+			lineArray.slice(0, 13).forEach((category, index) => {
+				text += `| ${CATEGORIES[index]} | ${!index ? category.trim().slice(1) : category.trim()} |\n`;
+				HTML += `
+					<tr>
+						<td>${CATEGORIES[index]}</td>
+						<td>${!index ? category.trim().slice(1) : category.trim()}</td>
+					</tr>`
+			});
+			text += "\n\n";
+			HTML += `
+				</tbody>
+			</table>
+		</section>`;
+		}
+		HTML += `
+	</section>`
+
+		const filePath = path.join(projectDir, 'compilation_summary.md');
+		fs.writeFileSync(filePath, text);
+		console.log("Done");
+		const htmlPath = path.join(projectDir, 'compilation_summary.html');
+		HTML += `
+		<script>
+		for (let dropdown of document.getElementsByClassName("dropdown")) {
+			dropdown.style.overflow = "hidden";
+			dropdown.style.height = String(dropdown.firstElementChild.offsetHeight-1) + "px";
+			console.log(dropdown, dropdown.children, dropdown.firstElementChild);
+			dropdown.firstElementChild.addEventListener("click", (event) => {
+				let target;
+				if (event.target.tagName.toLowerCase() != "section") {
+					target = event.target.parentElement;
+				} else { target = event.target; }
+				const parent = target.parentElement;
+				if (parent.style.height != "auto") {
+					parent.style.height = "auto";
+					target.firstElementChild.style.rotate = "0deg";
+					dropdown.style.overflowX = "auto";
+				} else {
+					parent.style.height = String(target.offsetHeight-1) + "px";
+					console.log("Closing");
+					target.firstElementChild.style.rotate = "180deg";
+					dropdown.style.overflowX = "hidden";
+				}
+			});
+			dropdown.firstElementChild.firstElementChild.style.width = dropdown.firstElementChild.children[1].offsetHeight;
+			dropdown.firstElementChild.firstElementChild.style.height = dropdown.firstElementChild.children[1].offsetHeight;
+		}
+	</script>
+	<footer>
+		<a href="https://www.flaticon.com/free-icons/arrowhead" title="arrowhead icons">Arrowhead icons created by IconKanan - Flaticon</a>
+	</footer>
+</body>
+</html>`;
+		fs.writeFileSync(htmlPath, HTML);
+		const panel = vscode.window.createWebviewPanel(
+			'htmlPreview',
+			'Quartus Compilation Report',
+			vscode.ViewColumn.One,
+			{ enableScripts: true } // Allows <script> tags to execute
+		);
+
+		// Load from your local file
+		panel.webview.html = fs.readFileSync(htmlPath.toString(), 'utf8');
+		// await vscode.commands.executeCommand('workbench.action.browser.open', "file://" + htmlPath.toString());
+	} catch (e) {
+		console.error(e);
+	}
 }
 
 // function validateDocument(document: vscode.TextDocument, collection: vscode.DiagnosticCollection) {

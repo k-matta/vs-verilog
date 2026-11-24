@@ -2,12 +2,12 @@
 	"$schema": "../schema.json",
 	"name": "SystemVerilog",
 	"patterns": [
+		{ "include": "#nested-objects" }, 
+		{ "include": "#comments" },
 		{ "include": "#strings" },
-		{ "include": "#nested-objects" },
 		{ "include": "#constants" },
 		{ "include": "#keywords" },
 		{ "include": "#storages" },
-		{ "include": "#comments" },
 		{ "include": "#support" },
 		{ "include": "#entities" },
 		{ "include": "#variables" },
@@ -30,17 +30,30 @@
 				}
 			},
 			"patterns": [
+				{ "include": "#nested-objects" },
+				{ "include": "#comments" },
 				{ "include": "#constants" },
 				{ "include": "#variables" },
 				{ "include": "#strings" },
-				{ "include": "#nested-objects" },
 				{ "include": "#keywords" },
 				{ "include": "#storages" },
-				{ "include": "#comments" },
 				{ "include": "#support" },
 				{ "include": "#entities" },
 				{ "include": "#invalid" },
 				{ "include": "#invalidadvanced-structures" }
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.systemverilog",
+					"begin": "/\\*",
+					"end": "\\*/"
+				},
+				{
+					"name": "comment.line.double-slash.systemverilog",
+					"match": "//.*$"
+				}
 			]
 		},
 		"keywords": {
@@ -118,19 +131,6 @@
 				}
 			]
 		},
-		"comments": {
-			"patterns": [
-				{
-					"name": "comment.block.systemverilog",
-					"begin": "/\\*",
-					"end": "\\*/"
-				},
-				{
-					"name": "comment.line.double-slash.systemverilog",
-					"match": "(//.*$)"
-				}
-			]
-		},
 		"constants": {
 			"patterns": [
 				{
@@ -147,7 +147,7 @@
 				},
 				{
 					"name": "constant.numeric.decimal.systemverilog",
-					"match": "\\b(?!-)[0-9]*'d[0-9]+\\b"
+					"match": "\\b(?!-)[0-9]*'(s)?d[0-9]+\\b"
 				},
 				{
 					"name": "constant.numeric.hexadecimal.systemverilog",
